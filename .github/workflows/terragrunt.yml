@@ -1,25 +1,32 @@
-name: Terragrunt CI/CD Pipeline
+name: Terragrunt Deployment
 
 on:
   push:
     branches:
       - main
+      - 'feature/**'
+      - '*'
   pull_request:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   terragrunt:
+    name: Terragrunt Deploy
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.0.11
+        terraform_version: 1.0.0 
 
     - name: Install Terragrunt
       run: |
@@ -30,9 +37,9 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-        role-session-name: SampleRoleSession
-        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+        role-session-name: samplerolesession
+        aws-region: ${{ vars.AWS_REGION }}
 
     - name: Initialize Terragrunt
       working-directory: ./terragrunt-infra
@@ -54,3 +61,6 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: ./terragrunt-infra
       run: terragrunt run-all apply --terragrunt-non-interactive
+
+    - name: List directory contents for debugging
+      run: ls -R
