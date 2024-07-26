@@ -7,7 +7,7 @@ locals {
   region               = local.environment_vars.locals.region
   app_name             = local.environment_vars.locals.app_name
   env                  = local.environment_vars.locals.env
-  aws_profile          = local.environment_vars.locals.aws_profile
+  # aws_profile          = local.environment_vars.locals.aws_profile
 }
 
 # profile        = "${local.aws_profile}"
