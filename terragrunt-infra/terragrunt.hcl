@@ -10,6 +10,9 @@ locals {
   aws_profile          = local.environment_vars.locals.aws_profile
 }
 
+# profile        = "${local.aws_profile}"
+# profile        = local.aws_profile
+
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
@@ -17,7 +20,6 @@ generate "provider" {
   contents  = <<EOF
   provider "aws" {
     region = "${local.region}"
-    profile        = "${local.aws_profile}"
   }
 EOF
 }
@@ -30,7 +32,6 @@ remote_state {
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.region
     dynamodb_table = "${local.app_name}-${local.env}-${local.region}-terragrunt0"
-    profile        = local.aws_profile
   }
   generate = {
     path      = "backend.tf"

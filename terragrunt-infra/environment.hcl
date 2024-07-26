@@ -6,5 +6,5 @@ locals {
   app_name             = "xyz"
   region               = "us-east-1"
   account_id           = "339712743018"
-  aws_profile          = "sajjadsso"
+  # aws_profile          = "sajjadsso"
 }
