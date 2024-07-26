@@ -47,6 +47,19 @@ jobs:
           chmod +x terragrunt
           sudo mv terragrunt /usr/local/bin/terragrunt
 
+      - name: Install TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Run HCL Format
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+        run: terragrunt hclfmt
+
+      - name: Run TFLint
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+        run: tflint --init && tflint
+
       - name: Initialize and Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: |
