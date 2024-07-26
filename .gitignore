@@ -1,0 +1,34 @@
+.terrgrunt-cache
+.terrgrunt-*-*
+.terraform
+.terraform.lock.hcl
+.terragrunt-init-*
+.terragrunt-*-*
+# Terragrunt cache and log files
+.terragrunt-cache/
+terragrunt-debug.tfvars.json
+
+# Ignore backup files created by Terraform
+*.backup
+
+# Ignore plan output files created by Terraform
+*.tfplan
+
+# Ignore any `.terraform` directories
+**/.terraform/*
+
+# Ignore lock files created by Terraform and Terragrunt
+.terraform.lock.hcl
+.terragrunt-lock.hcl
+
+# Ignore the generated terraform.tfvars file if you're using Terragrunt to create it
+terraform.tfvars
+
+# Ignore all .DS_Store files (common on macOS)
+.DS_Store
+
+# Ignore any .idea files (common for JetBrains IDEs)
+.idea/
+
+# Ignore local overrides for VSCode settings (useful if multiple people are using different settings)
+.vscode/
