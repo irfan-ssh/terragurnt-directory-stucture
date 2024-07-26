@@ -1,0 +1,1 @@
+# terragurnt-directory-stucture
