@@ -1,5 +1,5 @@
 terraform {
-  source = "git::ssh://git@bitbucket.org/northbay/traveloka.git//modules/s3"
+  source = "../../module/s3"
 }
 
 include {
