@@ -62,7 +62,7 @@ jobs:
 
       - name: Initialize Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: y | terragrunt run-all init -terragrunt-provider-cache
+        run: echo "y" | terragrunt run-all init -terragrunt-provider-cache
 
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
