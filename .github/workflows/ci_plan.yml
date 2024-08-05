@@ -15,7 +15,7 @@ jobs:
     name: "Terraform with Terragrunt"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
+      image: gghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
 
     env:
       TERRAGRUNT_TFPATH: /usr/local/bin/terragrunt
