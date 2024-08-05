@@ -60,11 +60,13 @@ jobs:
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: tflint --init && tflint
 
-      - name: Initialize and Plan Terragrunt
+      - name: Initialize Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: |
-          terragrunt run-all init -terragrunt-provider-cache
-          terragrunt run-all plan
+        run: y | terragrunt run-all init -terragrunt-provider-cache
+
+      - name: Plan Terragrunt
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+        run: terragrunt run-all plan
 
       - name: Apply Terragrunt
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
