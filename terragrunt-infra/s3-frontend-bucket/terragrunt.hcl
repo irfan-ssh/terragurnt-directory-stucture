@@ -1,5 +1,5 @@
 terraform {
-  source = "../../module/s3"
+  source = "../..//module//s3"
 }
 
 include {
@@ -8,5 +8,5 @@ include {
 
 
 inputs = {
-  bucket_name = "bucket-xyz-test-01-frontend21200"
+  bucket_name = "bucket-xyz-test-01-frontend222220"
 }
