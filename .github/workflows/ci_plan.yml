@@ -42,6 +42,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Debug IAM Permissions
+        run: |
+          aws sts get-caller-identity
+          aws iam get-user
+
       - name: Install TFLint
         uses: terraform-linters/setup-tflint@v4
         with:
@@ -55,9 +60,9 @@ jobs:
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: tflint --init && tflint
 
-      - name: Initialize Terragrunt
+      - name: Initialize Terragrunt with Debug Logging
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt run-all init --terragrunt-provider-cache --terragrunt-non-interactive
+        run: terragrunt run-all init --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-log-level debug
 
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
