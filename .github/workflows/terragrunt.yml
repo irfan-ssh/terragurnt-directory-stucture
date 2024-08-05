@@ -1,78 +1,78 @@
-name: Deploy Infrastructure with Terragrunt
+# name: Deploy Infrastructure with Terragrunt
 
-on:
-  push:
-    branches:
-      - main
-      - 'feature/**'
-      - '*'
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#       - 'feature/**'
+#       - '*'
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  terragrunt:
-    name: "Terraform with Terragrunt"
-    runs-on: ubuntu-latest
+# jobs:
+#   terragrunt:
+#     name: "Terraform with Terragrunt"
+#     runs-on: ubuntu-latest
 
-    env:
-      TERRAGRUNT_TFPATH: /usr/local/bin/terraform
-      tf_version: '1.0.11'
-      tg_version: 'latest'
-      tf_working_dir: './terragrunt-infra'  # Adjust this path based on your structure
+#     env:
+#       TERRAGRUNT_TFPATH: /usr/local/bin/terraform
+#       tf_version: '1.0.11'
+#       tg_version: 'latest'
+#       tf_working_dir: './terragrunt-infra'  # Adjust this path based on your structure
 
-    permissions:
-      id-token: write
-      contents: read
+#     permissions:
+#       id-token: write
+#       contents: read
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.tf_version }}
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: ${{ env.tf_version }}
 
-      - name: Configure AWS credentials with OIDC
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+#       - name: Configure AWS credentials with OIDC
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install Terragrunt
-        run: |
-          TG_VERSION=$(curl -s https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | jq -r '.tag_name')
-          curl -L "https://github.com/gruntwork-io/terragrunt/releases/download/$TG_VERSION/terragrunt_linux_amd64" -o terragrunt
-          chmod +x terragrunt
-          sudo mv terragrunt /usr/local/bin/terragrunt
+#       - name: Install Terragrunt
+#         run: |
+#           TG_VERSION=$(curl -s https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | jq -r '.tag_name')
+#           curl -L "https://github.com/gruntwork-io/terragrunt/releases/download/$TG_VERSION/terragrunt_linux_amd64" -o terragrunt
+#           chmod +x terragrunt
+#           sudo mv terragrunt /usr/local/bin/terragrunt
 
-      - name: Install TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: latest
+#       - name: Install TFLint
+#         uses: terraform-linters/setup-tflint@v4
+#         with:
+#           tflint_version: latest
 
-      - name: Run HCL Format
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt hclfmt
+#       - name: Run HCL Format
+#         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+#         run: terragrunt hclfmt
 
-      - name: Run TFLint
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: tflint --init && tflint
+#       - name: Run TFLint
+#         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+#         run: tflint --init && tflint
 
-      - name: Initialize Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: echo "y" | terragrunt run-all init -terragrunt-provider-cache
+#       - name: Initialize Terragrunt
+#         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+#         run: echo "y" | terragrunt run-all init -terragrunt-provider-cache
 
-      - name: Plan Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt run-all plan
+#       - name: Plan Terragrunt
+#         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+#         run: terragrunt run-all plan
 
-      - name: Apply Terragrunt
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: |
-          terragrunt run-all apply --terragrunt-non-interactive
+#       - name: Apply Terragrunt
+#         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+#         run: |
+#           terragrunt run-all apply --terragrunt-non-interactive
 
-      - name: List directory contents for debugging
-        run: ls -R
+#       - name: List directory contents for debugging
+#         run: ls -R
