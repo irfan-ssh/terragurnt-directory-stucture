@@ -58,8 +58,8 @@ jobs:
       - name: Initialize and Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: |
-          terragrunt run-all init -terragrunt-provider-cache
-          terragrunt run-all plan
+          terragrunt run-all init --terragrunt-log-level debug -terragrunt-provider-cache
+          terragrunt run-all plan --terragrunt-log-level debug
 
       - name: Apply Terragrunt
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
