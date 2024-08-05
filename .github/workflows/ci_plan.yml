@@ -1,64 +1,35 @@
-name: Deploy Infrastructure with Terragrunt
+name: Terragrunt Plan
 
 on:
   push:
     branches:
       - main
-      - 'feature/**'
       - '*'
   pull_request:
     branches:
       - main
 
 jobs:
-  terragrunt:
-    name: "Terraform with Terragrunt"
+  terragrunt-plan:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
-
-    env:
-      TERRAGRUNT_TFPATH: /usr/local/bin/terragrunt
-      tf_version: '1.0.11'
-      tg_version: 'latest'
-      tf_working_dir: './terragrunt-infra'  # Adjust this path based on your structure
-
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.tf_version }}
+    - name: Configure AWS credentials with OIDC
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Configure AWS credentials with OIDC
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    - name: Set up Docker
+      uses: actions/setup-docker@v2
 
-      - name: Install TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: latest
-
-      - name: Run HCL Format
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt hclfmt
-
-      - name: Run TFLint
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: tflint --init && tflint
-
-      - name: Initialize Terragrunt with Debug Logging
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt run-all init --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-log-level debug
-
-      - name: Plan Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt run-all plan
+    - name: Terragrunt Plan
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          ghcr.io/irfan-ssh/terragrunt-docker-image:latest \
+          terragrunt plan
