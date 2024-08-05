@@ -42,11 +42,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Debug IAM Permissions
-        run: |
-          aws sts get-caller-identity
-          aws iam get-user
-
       - name: Install TFLint
         uses: terraform-linters/setup-tflint@v4
         with:
