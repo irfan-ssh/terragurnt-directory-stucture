@@ -19,7 +19,7 @@ jobs:
       TERRAGRUNT_TFPATH: /usr/local/bin/terraform
       tf_version: '1.0.11'
       tg_version: 'latest'
-      tf_working_dir: './terragrunt-infra'  # Adjust this path based on your structure
+      tf_working_dir: './'  # Adjust this path based on your structure
 
     permissions:
       id-token: write
