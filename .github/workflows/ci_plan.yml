@@ -60,5 +60,5 @@ jobs:
         run: terragrunt run-all init --terragrunt-provider-cache
 
       - name: Plan Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed dd
         run: terragrunt run-all plan
