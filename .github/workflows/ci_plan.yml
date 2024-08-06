@@ -58,9 +58,11 @@ jobs:
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: tflint --init && tflint
 
-      - name: Initialize Terragrunt with Debug Logging
+      - name: Initialize Terragrunt INIT
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: terragrunt run-all init
+        run: | 
+          ls && ls -a 
+        # terragrunt run-all init
 
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as neededgggg
