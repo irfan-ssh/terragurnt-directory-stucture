@@ -1,13 +1,10 @@
 terraform {
-  source = find_in_parent_folders("module/s3")
+  source = "../../module/s3"
 }
 
-# include {
-#   path = find_in_parent_folders()
-# }
-locals {
+include {
+  path = find_in_parent_folders()
 }
-
 
 
 inputs = {
