@@ -18,7 +18,7 @@ jobs:
       image: ghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
 
     env:
-      TERRAGRUNT_TFPATH: /usr/local/bin/terragrunt
+      TERRAGRUNT_TFPATH: /usr/local/bin/terraform
       tf_version: '1.0.11'
       tg_version: 'latest'
       tf_working_dir: './terragrunt-infra'  # Adjust this path based on your structure
@@ -35,6 +35,9 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
+
+      - name: Verify Terraform Installation
+        run: terraform version
 
       - name: Configure AWS credentials with OIDC
         uses: aws-actions/configure-aws-credentials@v2
@@ -60,5 +63,5 @@ jobs:
         run: terragrunt run-all init --terragrunt-provider-cache
 
       - name: Plan Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed dd
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
         run: terragrunt run-all plan
