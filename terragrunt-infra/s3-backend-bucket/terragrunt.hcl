@@ -6,6 +6,9 @@ terraform {
 #   path = find_in_parent_folders()
 # }
 
+locals {
+}
+
 
 inputs = {
   bucket_name = "bucket-xyz-test-backend2222222"
