@@ -83,6 +83,9 @@ jobs:
           terragrunt --version
         working-directory: ${{ env.tf_working_dir }}
 
+      - name: Init Terragrunt
+        working-directory: ${{ env.tf_working_dir }}  # Adjust path as neededgggg
+        run: terragrunt run-all init --terragrunt-log-level debug --terragrunt-debug
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}  # Adjust path as neededgggg
-        run: terragrunt run-all plan
+        run: terragrunt run-all plan --terragrunt-log-level debug --terragrunt-debug
