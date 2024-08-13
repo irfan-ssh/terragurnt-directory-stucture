@@ -52,10 +52,11 @@ jobs:
         working-directory: ${{ env.tf_working_dir }}
         run: |
           terragrunt run-all plan -terragrunt-provider-cache -no-color -out=plan.output --terragrunt-non-interactive
-      - name: Apply Terragrunt Plan
+
+      - name: Terragrunt Apply
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt apply -terragrunt-provider-cache -no-color plan.output --terragrunt-non-interactive
+          terragrunt run-all apply -terragrunt-provider-cache -no-color plan.output --terragrunt-non-interactive
 
       - name: List Folder
         working-directory: ${{ env.tf_working_dir }}
