@@ -19,8 +19,6 @@ jobs:
 
     env:
       TERRAGRUNT_TFPATH: /usr/local/bin/terraform
-      TERRAFORM_VERSION: '1.8.5'
-      TERRAGRUNT_VERSION: '0.60.2'
       tf_working_dir: './terragrunt-code'
 
     permissions:
@@ -33,14 +31,14 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Verify Terraform and Terragrunt Installation
         run: |
           ls -ashl
-          tfenv install
-          tgenv install 
+          tfenv install 1.8.5
+          tgenv install 0.60.0
+          tfenv use 1.8.5
+          tgenv use 0.60.0
           terraform --version
           terragrunt --version
         working-directory: ${{ env.tf_working_dir }}
