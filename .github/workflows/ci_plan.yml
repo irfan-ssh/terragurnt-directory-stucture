@@ -38,6 +38,9 @@ jobs:
 
       - name: Verify Terraform and Terragrunt Installation
         run: |
+          ls -ashl
+          tfenv install
+          tgenv install 
           terraform --version
           terragrunt --version
         working-directory: ${{ env.tf_working_dir }}
