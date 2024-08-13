@@ -44,12 +44,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Download Terraform Plan Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: terraform-plan
-          path: ${{ env.tf_working_dir }}
-
       - name: Terragrunt Plan
         working-directory: ${{ env.tf_working_dir }}
         run: |
