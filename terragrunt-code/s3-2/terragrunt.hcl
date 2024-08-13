@@ -8,5 +8,5 @@ include {
 
 
 inputs = {
-  bucket_name = "bucket-xyz-test-01-fro20"
+  bucket_name = "bucket-xyz-test-01-fr33o20"
 }

@@ -50,10 +50,14 @@ jobs:
           name: terraform-plan
           path: ${{ env.tf_working_dir }}
 
+      - name: Terragrunt Plan
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          terragrunt run-all plan -no-color -out=plan.output --terragrunt-non-interactive
       - name: Apply Terragrunt Plan
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all apply "terraform.tfplan" --terragrunt-non-interactive
+          terragrunt run-all apply -no-color plan.output --terragrunt-non-interactive
 
       - name: Clean up Terraform State
         working-directory: ${{ env.tf_working_dir }}
