@@ -2,9 +2,9 @@
 # Environment Configuration
 # -----------------------------------------------------------------------------
 locals {
-  env                  = "nbay"
+  env                  = "nb0ay"
   app_name             = "xyz"
   region               = "us-east-1"
-  account_id           = "339712743018"
+  account_id           = "006402735666"
   # aws_profile          = "sajjadsso"
 }
