@@ -60,6 +60,6 @@ jobs:
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all plan --terragrunt-log-level debug --terragrunt-debug
+          terragrunt run-all plan --terragrunt-non-interactive
           # Optional: Save plan output
           # terragrunt run-all plan --out=terraform.tfplan
