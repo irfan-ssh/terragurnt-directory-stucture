@@ -7,6 +7,7 @@ include {
 }
 
 
+
 inputs = {
-  bucket_name = "bucket-xyz-test-01-frontend222220"
+  bucket_name = "bucket-xyz-test-back22222"
 }

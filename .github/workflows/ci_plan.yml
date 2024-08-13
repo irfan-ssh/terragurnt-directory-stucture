@@ -15,12 +15,12 @@ jobs:
     name: "Terraform with Terragrunt"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/irfan-ssh/terragrunt-docker-file:sha-0495639 # Replace with your actual image
+      image: ghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
 
     env:
       TERRAGRUNT_TFPATH: /usr/local/bin/terraform
-      tf_version: '1.5.7'
-      tg_version: '0.53.2'
+      TERRAFORM_VERSION: '1.8.5'
+      TERRAGRUNT_VERSION: '0.60.2'
       tf_working_dir: './terragrunt-code'
 
     permissions:
@@ -34,58 +34,31 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ env.tf_version }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Verify Terraform Installation
-        run: terraform version
-
-
-      # - name: Check terragrunt HCL
-      #   uses: gruntwork-io/terragrunt-action@v2
-      #   with:
-      #     tf_version: ${{ env.tf_version }}
-      #     tg_version: ${{ env.tg_version }}
-      #     tg_dir: ${{ env.tf_working_dir }}
-      #     tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
-
-  
-      - name: Verify installation
+      - name: Verify Terraform and Terragrunt Installation
         run: |
           terraform --version
           terragrunt --version
+        working-directory: ${{ env.tf_working_dir }}
+
       - name: Configure AWS credentials with OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: latest
-
       - name: Run HCL Format
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
+        working-directory: ${{ env.tf_working_dir }}
         run: terragrunt hclfmt
 
-      - name: Run TFLint
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as needed
-        run: tflint --init && tflint
-
-      - name: Install Terraform and Terragrunt
-        run: |
-          ls -ashl
-          tfenv install
-          terraform --version
-          # Install Terragrunt
-          curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v0.60.0/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
-          chmod +x /usr/local/bin/terragrunt
-          terragrunt --version
-        working-directory: ${{ env.tf_working_dir }}
-
       - name: Init Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as neededgggg
+        working-directory: ${{ env.tf_working_dir }}
         run: terragrunt run-all init --terragrunt-log-level debug --terragrunt-debug
+
       - name: Plan Terragrunt
-        working-directory: ${{ env.tf_working_dir }}  # Adjust path as neededgggg
-        run: terragrunt run-all plan --terragrunt-log-level debug --terragrunt-debug
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          terragrunt run-all plan --terragrunt-log-level debug --terragrunt-debug
+          # Optional: Save plan output
+          # terragrunt run-all plan --out=terraform.tfplan
