@@ -1,0 +1,62 @@
+name: CD Apply
+
+on:
+    workflow_run:
+      workflows: ["CI Plan"]
+      types:
+        - completed
+
+jobs:
+  terragrunt:
+    name: "Apply Terraform with Terragrunt"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/irfan-ssh/terragrunt-docker-image:latest # Replace with your actual image
+
+    env:
+      TERRAGRUNT_TFPATH: /usr/local/bin/terraform
+      tf_working_dir: './terragrunt-code'
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Verify Terraform and Terragrunt Installation
+        run: |
+          tfenv install 1.8.5
+          tgenv install 0.60.0
+          tfenv use 1.8.5
+          tgenv use 0.60.0
+          terraform --version
+          terragrunt --version
+        working-directory: ${{ env.tf_working_dir }}
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-plan
+          path: ${{ env.tf_working_dir }}
+
+      - name: Apply Terragrunt Plan
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          terragrunt run-all apply "terraform.tfplan" --terragrunt-non-interactive
+
+      - name: Clean up Terraform State
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          terragrunt run-all refresh
+          rm -rf .terraform
