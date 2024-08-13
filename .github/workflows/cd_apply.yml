@@ -44,14 +44,23 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Terragrunt Init
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          terragrunt run-all init -terragrunt-provider-cache -no-color --terragrunt-non-interactive
       - name: Terragrunt Plan
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all plan -no-color -out=plan.output --terragrunt-non-interactive
+          terragrunt run-all plan -terragrunt-provider-cache -no-color -out=plan.output --terragrunt-non-interactive
       - name: Apply Terragrunt Plan
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all apply -no-color plan.output --terragrunt-non-interactive
+          terragrunt run-all apply -terragrunt-provider-cache -no-color plan.output --terragrunt-non-interactive
+
+      - name: List Folder
+        working-directory: ${{ env.tf_working_dir }}
+        run: |
+          ls -al
 
       - name: Clean up Terraform State
         working-directory: ${{ env.tf_working_dir }}

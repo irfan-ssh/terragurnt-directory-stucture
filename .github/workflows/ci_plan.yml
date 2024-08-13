@@ -55,11 +55,11 @@ jobs:
 
       - name: Init Terragrunt
         working-directory: ${{ env.tf_working_dir }}
-        run: terragrunt run-all init --terragrunt-non-interactive
+        run: terragrunt run-all init -terragrunt-provider-cache --terragrunt-non-interactive
 
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all plan --terragrunt-non-interactive
+          terragrunt run-all plan -terragrunt-provider-cache --terragrunt-non-interactive
           # Optional: Save plan output
-          # terragrunt run-all plan --out=terraform.tfplan
+          terragrunt run-all plan -terragrunt-provider-cache --out=terragrunt.tfplan
