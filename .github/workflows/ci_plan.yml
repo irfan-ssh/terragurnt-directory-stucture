@@ -61,7 +61,7 @@ jobs:
         working-directory: ${{ env.tf_working_dir }}
         run: |
           # Create a central directory for collecting outputs
-          mkdir -p ${{ env.tf_working_dir }}/plan_output
+          mkdir -p ./terragrunt-code/plan_output
       
           # Find directories with terragrunt.hcl files to ensure valid Terragrunt directories
           dirs=$(find . -type f -name "terragrunt.hcl" -exec dirname {} \;)
@@ -78,25 +78,16 @@ jobs:
           for dir in $dirs; do
             echo "Running plan in $dir"
             
-            # Ensure the directory exists
-            mkdir -p "$dir"
-      
-            # Use absolute paths for the plan output
-            output_path="${dir}/plan.output"
+            # Use an absolute path for the plan output
+            output_path="./terragrunt-code/plan_output/$(basename $dir)_plan.output"
+            
             terragrunt plan -no-color -out=$output_path --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-working-dir $dir
-      
-            # Check if plan.output exists and copy to central directory
-            if [ -f "$output_path" ]; then
-              echo "Found plan.output in $dir, copying to plan_output directory."
-              cp "$output_path" ${{ env.tf_working_dir }}/plan_output/$(basename $dir)_plan.output
-      
-              # Optionally, run terraform show and append to a central plan_output file
-              terraform show -no-color $output_path >> ${{ env.tf_working_dir }}/plan_output/plan_output
-            else
-              echo "No plan.output found in $dir"
-            fi
+            
+            # Optionally, run terraform show and append to a central plan_output file
+            terraform show -no-color $output_path >> ./terragrunt-code/plan_output/plan_output
           done
       
-          echo "All plan outputs have been collected in ${{ env.tf_working_dir }}/plan_output"
-          ls -al ${{ env.tf_working_dir }}/plan_output
+          echo "All plan outputs have been collected in ./terragrunt-code/plan_output"
+          ls -al ./terragrunt-code/plan_output
+      
       
