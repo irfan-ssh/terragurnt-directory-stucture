@@ -78,16 +78,23 @@ jobs:
           for dir in $dirs; do
             echo "Running plan in $dir"
             
-            # Use an absolute path for the plan output
-            output_path="./terragrunt-code/plan_output/$(basename $dir)_plan.output"
+            # Ensure the directory exists for the output
+            mkdir -p $dir/plan_output
             
-            terragrunt plan -no-color -out=$output_path --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-working-dir $dir
+            terragrunt plan -no-color -out=$dir/plan_output/plan.output --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-working-dir $dir
             
-            # Optionally, run terraform show and append to a central plan_output file
-            terraform show -no-color $output_path >> ./terragrunt-code/plan_output/plan_output
+            # Check if plan.output exists and copy to central directory
+            if [ -f "$dir/plan_output/plan.output" ]; then
+              echo "Found plan.output in $dir, copying to plan_output directory."
+              cp "$dir/plan_output/plan.output" ./terragrunt-code/plan_output/$(basename $dir)_plan.output
+              
+              # Optionally, run terraform show and append to a central plan_output file
+              terraform show -no-color $dir/plan_output/plan.output >> ./terragrunt-code/plan_output/plan_output
+            else
+              echo "No plan.output found in $dir"
+            fi
           done
       
           echo "All plan outputs have been collected in ./terragrunt-code/plan_output"
           ls -al ./terragrunt-code/plan_output
-      
       
