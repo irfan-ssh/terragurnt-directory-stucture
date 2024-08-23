@@ -55,11 +55,32 @@ jobs:
 
       - name: Init Terragrunt
         working-directory: ${{ env.tf_working_dir }}
-        run: terragrunt run-all init -terragrunt-provider-cache --terragrunt-non-interactive
+        run: terragrunt run-all init --terragrunt-provider-cache --terragrunt-non-interactive
 
       - name: Plan Terragrunt
         working-directory: ${{ env.tf_working_dir }}
         run: |
-          terragrunt run-all plan -terragrunt-provider-cache --terragrunt-non-interactive
-          # Optional: Save plan output
-          terragrunt run-all plan -terragrunt-provider-cache --out=terragrunt.tfplan
+          # Create a central directory for collecting outputs
+          mkdir -p ${{ env.tf_working_dir }}/plan_output
+
+          # Find directories with terragrunt.hcl files to ensure valid Terragrunt directories
+          dirs=$(find ${{ env.tf_working_dir }} -type f -name "terragrunt.hcl" -exec dirname {} \;)
+
+          # Run the plan command in each directory and collect the outputs
+          for dir in $dirs; do
+            echo "Running plan in $dir"
+            terragrunt plan -no-color -out=$dir/plan.output --terragrunt-provider-cache --terragrunt-non-interactive --terragrunt-working-dir $dir
+            
+            # Check if plan.output exists and copy to central directory
+            if [ -f "$dir/plan.output" ]; then
+              cp "$dir/plan.output" ${{ env.tf_working_dir }}/plan_output/$(basename $dir)_plan.output
+
+              # Optionally, run terraform show and append to a central plan_output file
+              terraform show -no-color $dir/plan.output >> ${{ env.tf_working_dir }}/plan_output/plan_output
+            else
+              echo "No plan.output found in $dir"
+            fi
+          done
+
+          echo "All plan outputs have been collected in ${{ env.tf_working_dir }}/plan_output"
+          ls -al ${{ env.tf_working_dir }}/plan_output
